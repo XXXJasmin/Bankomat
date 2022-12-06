@@ -16,7 +16,7 @@ class Bankomat:
                 if line=='':
                     break
                 bill, count = line.split()
-                self.trezor [int(bill)] = int(count)
+                self.trezor[int(bill)] = int(count)
         self.bills=sorted(self.trezor.keys(), reverse=True)
         return True 
 
@@ -26,43 +26,34 @@ class Bankomat:
                 f.write (f"{key:7} {self.trezor[key]:7}\n")
         return True 
 
-    def make(self, amount):
-        slovnik = {}
+    def make(self, castka):
         max_cislo = 0
-        automat = int(input("Zadejte Vaši částku, prosím : "))
+        automat = int(castka)
 
-        with open("trezor.txt", "r") as t:
-            for cisla in t.readlines():
-                cisla = cisla.strip()
-                cisla = cisla.split()
-                slovnik.update({int(cisla[0]) : int(cisla[1])})
+        
 
-        for key in slovnik.keys():
-            max_cislo += slovnik[key] * key
+        for key in self.trezor.keys():
+            max_cislo += self.trezor[key] * key
 
         if automat > max_cislo:
             print("V tomto zařízení se nenachází zadaná hodnota peněz.")
-        else:
             exit()
 
-        for key in slovnik.keys():
+        vysledek = ''
+        for key in self.trezor.keys():
             if automat // key != 0:
                 pocet = automat // key
-                if pocet <= slovnik[key]:
+                if pocet <= self.trezor[key]:
                     automat -= pocet * key
-                    slovnik.update({key : slovnik[key] - pocet})
-                    print("Výběr částky: ", key,"Kč ", pocet, " krát")
+                    self.trezor.update({key : self.trezor[key] - pocet})
+                    vysledek += f"Výběr částky: {key} Kč {pocet} krát\n" 
                 else:
-                    pocet = slovnik[key]
+                    pocet = self.trezor[key]
                     automat -= pocet * key
-                    slovnik.update({key : slovnik[key] - slovnik[key]})
-                    print("Výběr částky: ", key,"Kč ", pocet, " krát")
-
-        with open("trezor.txt", "w") as t:
-            for key,value in slovnik.items():  
-                t.write(f"{key}   {slovnik[key]}\n")
-        
-        return True or False
+                    self.trezor.update({key : self.trezor[key] - self.trezor[key]})
+                    vysledek += f"Výběr částky: {key} Kč {pocet} krát\n"
+                
+        return vysledek
 
 
 if __name__ == "__main__":
